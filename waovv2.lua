@@ -6,6 +6,9 @@
 -- WHITELIST
 -------------------------------------------------
 local WhitelistedUsernames = {
+    "QqAoii",
+    "altayxxxxxxxxx",
+    "burakcarman_67",
     "BatuWavI",
 }
 
@@ -2437,6 +2440,73 @@ lowerTab:CreateButton({
         end
     end
 })
+-- Nihai Çözüm: BodyForce ile uçuşu sürekli olarak yere doğru baskılar
+local BodyForceName = "GravitySuppressor"
+local ForceMagnitude = Vector3.new(0, -500, 0) -- 100.000 gücünde aşağı kuvvet uygula (Çok güçlü)
+
+local function manageDownwardForce(char)
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    if not hrp then return end
+
+    -- Sürekli kontrol döngüsü: Her an topu kontrol et
+    local connection = hrp.AncestryChanged:Connect(function() end)
+    connection:Disconnect() -- Sadece bir kez çalışması için bağlantıyı hemen kes
+
+    -- BodyForce'u ekle
+    local function applyForce()
+        local bf = hrp:FindFirstChild(BodyForceName)
+        if bf then return end
+        
+        bf = Instance.new("BodyForce")
+        bf.Name = BodyForceName
+        bf.Force = ForceMagnitude
+        bf.Parent = hrp
+    end
+    
+    -- BodyForce'u kaldır
+    local function removeForce()
+        local bf = hrp:FindFirstChild(BodyForceName)
+        if bf then
+            bf:Destroy()
+        end
+    end
+    
+    -- Top tutulup tutulmadığını kontrol eden ana döngü
+    RunService.Heartbeat:Connect(function()
+        local isHoldingBall = false
+        
+        -- Topun elde olup olmadığını kontrol et (Weld kontrolü)
+        if hrp:FindFirstChildOfClass("WeldConstraint") or hrp:FindFirstChildOfClass("Weld") then
+             isHoldingBall = true
+        end
+
+        -- İkinci kontrol: Tüm karakterdeki Weld'leri kontrol et
+        if not isHoldingBall then
+            for _, part in ipairs(char:GetDescendants()) do
+                if (part:IsA("WeldConstraint") or part:IsA("Weld")) and (part.Part0 and part.Part1) then
+                    if part.Part0.Name:find("Ball") or part.Part1.Name:find("Ball") or part.Part0.Name:find("TPS") or part.Part1.Name:find("TPS") then
+                        isHoldingBall = true
+                        break
+                    end
+                end
+            end
+        end
+
+        if isHoldingBall then
+            applyForce() -- Top tutuluyorsa sürekli aşağı it
+        else
+            removeForce() -- Top bırakılırsa kuvveti kaldır
+        end
+    end)
+end
+
+-- Script başladığında ve karakter her yeniden doğduğunda kuvvet yönetimini başlat
+local currentCharacter = getCharacter() 
+if currentCharacter then
+    manageDownwardForce(currentCharacter)
+end
+
+player.CharacterAdded:Connect(manageDownwardForce)
 
 -------------------------------------------------
 -- SETTINGS TAB
