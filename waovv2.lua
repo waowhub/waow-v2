@@ -9,6 +9,7 @@ local WhitelistedUsernames = {
     "QqAoii",
     "altayxxxxxxxxx",
     "burakcarman_67",
+    "burakcarman_6767",	
     "BatuWavI",
 }
 
@@ -2518,3 +2519,4 @@ settingsTab:BuildConfigSection()
 -------------------------------------------------
 -- End of Script ✨
 -------------------------------------------------   
+
