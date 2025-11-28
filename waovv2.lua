@@ -11,6 +11,7 @@ local WhitelistedUsernames = {
     "burakcarman_67",
     "burakcarman_6767",	
     "BatuWavI",
+	"sfafdsfsdg21",
 }
 
 local LocalPlayer = game:GetService("Players").LocalPlayer
@@ -2519,4 +2520,5 @@ settingsTab:BuildConfigSection()
 -------------------------------------------------
 -- End of Script ✨
 -------------------------------------------------   
+
 
